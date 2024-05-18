@@ -2,10 +2,12 @@ import numpy as np
 
 ### Constants ###
 ROM_SIZE_BYTES = 1024 * 1024 # 1 MB
+npUINT32_MAX = np.uint32(0xFFFF_FFFF)
+DEFAULT_VALUE = npUINT32_MAX
 
 class ROM:
     def __init__(self, data_to_load):
-        self.memory = [np.uint32(0) for i in range(int(ROM_SIZE_BYTES / 4))]
+        self.memory = [npUINT32_MAX for i in range(int(ROM_SIZE_BYTES / 4))]
 
         for i, u32 in enumerate(data_to_load):
             if i > int(ROM_SIZE_BYTES / 4):
