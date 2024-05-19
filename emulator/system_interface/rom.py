@@ -19,7 +19,7 @@ class ROM:
         # Only allow aligned addresses for now
         # Roll over addresses greater than ROM_SIZE_BYTES
         if address & 0b11 == 0:
-            return self.memory[address & (int(ROM_SIZE_BYTES / 4) - 1)]
+            return self.memory[(address & (ROM_SIZE_BYTES - 1)) >> 2]
 
         # Return all 1s  if not aligned
         return np.uint32(0xFFFF_FFFF)
