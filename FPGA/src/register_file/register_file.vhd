@@ -26,7 +26,9 @@ entity register_file is
 
         rd1_data, rd2_data : out std_logic_vector(data_width_bits-1 downto 0) := (others => '0');
         rd1_address, rd2_address, wr_address : in natural range 0 to register_file_size-1;
-        wr_data : in std_logic_vector(data_width_bits-1 downto 0)
+        wr_data : in std_logic_vector(data_width_bits-1 downto 0);
+
+        data_written : out boolean := false
     );
 end entity;
 
@@ -38,8 +40,10 @@ begin
     begin
         if rising_edge(clk) and en then
             -- write data if write_enable is active
+            data_written <= false;
             if write_enable then
                 registers(wr_address) <= wr_data;
+                data_written <= true; -- pulse data_written high
             end if;
 
             -- reads

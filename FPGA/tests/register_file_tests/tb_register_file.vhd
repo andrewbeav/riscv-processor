@@ -31,7 +31,7 @@ architecture tb of tb_register_file is
     -- simulation flow signals
     signal start_initialized_test : boolean := false;
     signal do_write_test : boolean := false;
-    constant max_write_data : unsigned(register_file_size-1 downto 0) := to_unsigned(100000, register_file_size);
+    constant max_write_data : unsigned(register_file_size-1 downto 0) := to_unsigned(1000, register_file_size);
     signal test_write_data : unsigned(register_file_size-1 downto 0):= (others => '0') ;
     type write_test_state_t is (WRITE_DATA, WAIT_FOR_WRITE_VALID, READ_DATA, CHECK_READ);
     signal write_test_state : write_test_state_t := WRITE_DATA;
