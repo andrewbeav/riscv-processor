@@ -128,11 +128,18 @@ begin
                             read_op_state <= WAIT_FOR_ACK;
                             send_data_byte_counter <= 0;
                         else
-                            with send_data_byte_counter select
-                                tx_data_in_read_op <= rd1_data(7 downto 0) when 0,
-                                    rd1_data(15 downto 8) when 1,
-                                    rd1_data(23 downto 16) when 2,
-                                    rd1_data(31 downto 24) when others; -- 3
+                            -- with send_data_byte_counter select
+                            --     tx_data_in_read_op <= rd1_data(7 downto 0) when 0,
+                            --         rd1_data(15 downto 8) when 1,
+                            --         rd1_data(23 downto 16) when 2,
+                            --         rd1_data(31 downto 24) when others; -- 3
+
+                            case send_data_byte_counter is
+                                when 0 => tx_data_in_read_op <= rd1_data(7 downto 0);
+                                when 1 => tx_data_in_read_op <= rd1_data(15 downto 8);
+                                when 2 => tx_data_in_read_op <= rd1_data(23 downto 16);
+                                when others => tx_data_in_read_op <= rd1_data(31 downto 24);
+                            end case;
 
                             n_request_tx_read_op <= '0';
                             send_data_byte_counter <= send_data_byte_counter + 1;
