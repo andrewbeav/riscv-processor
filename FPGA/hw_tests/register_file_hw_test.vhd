@@ -11,7 +11,7 @@ package register_file_hw_test_pkg is
         -- Send address in second byte
         -- Send data to write in next 4 bytes
         -- FPGA will send uart_ack after write is complete
-    constant write_op_code : std_logic_vector (7 downto 0) := x"01";
+    constant write_op_code : std_logic_vector (7 downto 0) := x"20";
     constant uart_ack      : std_logic_vector (7 downto 0) := x"6B";
 
     -- To read, user will:
@@ -19,7 +19,7 @@ package register_file_hw_test_pkg is
         -- Send address in second byte
         -- FPGA will send data in next 4 bytes
         -- user sends uart_ack
-    constant read_op_code  : std_logic_vector (7 downto 0) := x"02";
+    constant read_op_code  : std_logic_vector (7 downto 0) := x"21";
     
 end package;
 
@@ -63,6 +63,7 @@ architecture rtl of register_file_hw_test is
         -- Send address in second byte
         -- Send data to write in next 4 bytes
         -- FPGA will send uart_ack after write is complete
+    signal in_write_op     : boolean := false;
     type write_op_state_t is (IDLE, GET_ADDRESS, GET_DATA, WRITE_DATA, ACKNOWLEDGE);
     signal write_op_state : write_op_state_t := IDLE;
     signal read_data_byte_counter : natural range 0 to 4 := 0;
@@ -73,6 +74,7 @@ architecture rtl of register_file_hw_test is
         -- Send address in second byte
         -- FPGA will send data in next 4 bytes
         -- user sends uart_ack
+    signal in_read_op      : boolean := false;
     type read_op_state_t is (IDLE, GET_ADDRESS, READ_DATA, SEND_DATA, WAIT_FOR_ACK);
     signal read_op_state : read_op_state_t := IDLE;
     signal send_data_byte_counter : natural range 0 to 4 := 0;
@@ -111,7 +113,9 @@ begin
         if rising_edge(clk) then
             case read_op_state is
                 when IDLE =>
-                    if rx_data_ready = '1' and rx_data_out = read_op_code then
+                    in_read_op <= false;
+                    if rx_data_ready = '1' and rx_data_out = read_op_code and not in_write_op then
+                        in_read_op <= true;
                         read_op_state <= GET_ADDRESS;
                     end if;
                 when GET_ADDRESS =>
@@ -165,7 +169,9 @@ begin
         if rising_edge(clk) then
             case write_op_state is
                 when IDLE =>
-                    if rx_data_ready = '1' and rx_data_out = write_op_code then
+                    in_write_op <= false;
+                    if rx_data_ready = '1' and rx_data_out = write_op_code and not in_read_op then
+                        in_write_op <= true;
                         write_op_state <= GET_ADDRESS;
                     end if;
                 when GET_ADDRESS =>
@@ -191,19 +197,20 @@ begin
                         write_op_state <= ACKNOWLEDGE;
                     end if;
                 when ACKNOWLEDGE =>
-                    if not write_ack_tx_requested then
-                        n_request_tx_write_op <= '0';
-                        tx_data_in_write_op <= uart_ack;
-                        write_ack_tx_requested <= true;
-                    else
-                        n_request_tx_write_op <= '1';
-                    end if;
+                    -- if not write_ack_tx_requested then
+                    --     n_request_tx_write_op <= '0';
+                    --     tx_data_in_write_op <= uart_ack;
+                    --     write_ack_tx_requested <= true;
+                    -- else
+                    --     n_request_tx_write_op <= '1';
+                    -- end if;
                     
-                    if tx_sent then
-                        write_ack_tx_requested <= false;
-                        tx_data_in_write_op <= (others => '0');
-                        write_op_state <= IDLE;
-                    end if;
+                    -- if tx_sent then
+                    --     write_ack_tx_requested <= false;
+                    --     tx_data_in_write_op <= (others => '0');
+                    --     write_op_state <= IDLE;
+                    -- end if;
+                    write_op_state <= IDLE;
 
                 when others => -- do nothing
             end case;
@@ -229,9 +236,9 @@ begin
     n_request_tx <= n_request_tx_read_op and n_request_tx_write_op;
     tx_data_in <= tx_data_in_read_op or tx_data_in_write_op;
     uart_tx_inst: entity work.uart_tx
-    generic map (
-        baud => 500000
-    )
+    -- generic map (
+    --     baud => 500000
+    -- )
     port map(
         clk => clk,
         reset => '0',
@@ -242,9 +249,9 @@ begin
     );
 
     uart_rx_inst: entity work.uart_rx
-    generic map (
-        baud => 500000
-    )
+    -- generic map (
+    --     baud => 500000
+    -- )
     port map(
         clk => clk,
         reset => '0',

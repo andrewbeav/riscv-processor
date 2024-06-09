@@ -63,8 +63,8 @@ begin
                 when 2200 => tx_from_test <= '1';
                 when 2400 => tx_from_test <= '1';
                 when 2600 => tx_from_test <= '0';
-                when 2800 => tx_from_test <= '1';
-                when 3000 => tx_from_test <= '0';
+                when 2800 => tx_from_test <= '0';
+                when 3000 => tx_from_test <= '1';
                 when 3200 => tx_from_test <= '0';
                 when 3400 => tx_from_test <= '0';
                 when 3600 => tx_from_test <= '0';
@@ -129,8 +129,8 @@ begin
                 when 12000 + 2200 => tx_from_test <= '1';
                 when 12000 + 2400 => tx_from_test <= '1';
                 when 12000 + 2600 => tx_from_test <= '0';
-                when 12000 + 2800 => tx_from_test <= '1';
-                when 12000 + 3000 => tx_from_test <= '0';
+                when 12000 + 2800 => tx_from_test <= '0';
+                when 12000 + 3000 => tx_from_test <= '1';
                 when 12000 + 3200 => tx_from_test <= '0';
                 when 12000 + 3400 => tx_from_test <= '0';
                 when 12000 + 3600 => tx_from_test <= '0';
