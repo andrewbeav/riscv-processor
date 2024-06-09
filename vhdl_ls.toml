@@ -6,6 +6,9 @@ riscv.files = [
     'FPGA/src/uart/src/uart_pkg.vhd',
     'FPGA/src/uart/src/uart_rx.vhd',
     'FPGA/src/uart/src/uart_tx.vhd',
+
+    'FPGA/hw_tests/register_file_hw_test.vhd',
+    'FPGA/tests/register_file_tests/tb_register_file_hw_test.vhd',
 ]
 
 vunit_lib.files = [
